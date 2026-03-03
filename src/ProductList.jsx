@@ -7,6 +7,7 @@ function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
     const dispatch = useDispatch();
+    const cart = useSelector(state => state.cart.items);
     const plantsArray = [
         {
             category: "Air Purifying Plants",
@@ -235,6 +236,13 @@ function ProductList({ onHomeClick }) {
         textDecoration: 'none',
     }
 
+    const calculateTotalProduct = () => {
+     let totalCost = 0;
+      cart.forEach((item) => {
+        totalCost += item.quantity;
+      });
+      return totalCost;
+  };
     const handleHomeClick = (e) => {
         e.preventDefault();
         onHomeClick();
@@ -270,22 +278,24 @@ function ProductList({ onHomeClick }) {
                 </div>
                 <div style={styleObjUl}>
                     <div> <a href="#" onClick={(e) => handlePlantsClick(e)} style={styleA}>Plants</a></div>
-                    <div> <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}><h1 className='cart'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id="IconChangeColor" height="68" width="68"><rect width="156" height="156" fill="none"></rect><circle cx="80" cy="216" r="12"></circle><circle cx="184" cy="216" r="12"></circle><path d="M42.3,72H221.7l-26.4,92.4A15.9,15.9,0,0,1,179.9,176H84.1a15.9,15.9,0,0,1-15.4-11.6L32.5,37.8A8,8,0,0,0,24.8,32H8" fill="none" stroke="#faf9f9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" id="mainIconPathAttribute"></path></svg></h1></a></div>
+                    <div> <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}><h1 className='cart'>
+                        <h2 className='cart_quantity_count'>{calculateTotalProduct()}</h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id="IconChangeColor" height="68" width="68"><rect width="156" height="156" fill="none"></rect><circle cx="80" cy="216" r="12"></circle><circle cx="184" cy="216" r="12"></circle><path d="M42.3,72H221.7l-26.4,92.4A15.9,15.9,0,0,1,179.9,176H84.1a15.9,15.9,0,0,1-15.4-11.6L32.5,37.8A8,8,0,0,0,24.8,32H8" fill="none" stroke="#faf9f9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" id="mainIconPathAttribute"></path></svg></h1></a></div>
                 </div>
             </div>
             {!showCart ? (
                 <div className="product-grid">
                     {plantsArray.map((item) => (
-                        <div >
-                            <h2>{item.category}</h2>
+                        <div>
+                            <div className='plantname_heading'><h2 className='plant_heading'>{item.category}</h2></div>
                             <div className="product-list">
                                 {item.plants.map((product) => (
                                     <div key={product.name} className="product-card">
-                                        <img className='product-image' src={product.image} alt={product.name} />
                                         <h3 className='product-title'>{product.name}</h3>
+                                        <img className='product-image' src={product.image} alt={product.name} />
                                         <p className='product-price'>{product.cost}</p>
                                         <p>{product.description}</p>
-                                        <button className='product-button' onClick={() => dispatch(addItem(product))}>Add to Cart</button>
+                                        <button className={`product-button ${cart.some(item => item.name === product.name) ? 'added-to-cart' : ''}`} onClick={() => dispatch(addItem(product))}>{cart.some(item => item.name === product.name) ? 'Added to Cart' : 'Add to Cart'}</button>
                                     </div>
                                 ))}
                             </div>
